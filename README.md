@@ -555,36 +555,6 @@ Bond tokens and credit coupon tokens are standard **Stellar Assets**, making the
 
 ---
 
-## 🔗 Relationship to CarbonChain
-
-NbS Bond Protocol is a **financial primitive layered on top of CarbonChain's credit infrastructure**. It is not a fork — it is a composable extension.
-
-### What is Reused from CarbonChain
-
-| Component | Reuse Method |
-|---|---|
-| Soroban smart contracts (Rust) | Shared contract interfaces and credit token standards |
-| NestJS API layer | Shared middleware, auth, and oracle integration patterns |
-| Angular frontend | Shared component library and design system |
-| IPFS document anchoring | Same content-hashing and pinning infrastructure |
-| Stellar DEX integration | Same DEX router patterns and path-payment utilities |
-| Nonce-based replay protection | Same security library, same nonce management |
-
-### Key Distinction
-
-```
-CarbonChain  =  Raw credit issuance, registry, and infrastructure
-                       ↓
-NbS Bond Protocol  =  Financial layer (bond issuance, coupon mechanics,
-                      maturity, secondary market) built on top
-```
-
-Think of it as: `CarbonChain` = central bank of carbon credits. `NbS Bond Protocol` = commercial bank issuing structured products using those credits as yield.
-
-This architecture means NbS Bond Protocol inherits CarbonChain's oracle quality, credit integrity, and network effects — while adding the fixed-income mechanics and DeFi liquidity that institutional and retail investors require.
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
