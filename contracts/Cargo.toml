@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "shared",
+    "bond-issuer",
+    "coupon-engine",
+    "oracle-consumer",
+    "dex-router",
+    "project-registry",
+    "credit-retirement",
+    "tests",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"

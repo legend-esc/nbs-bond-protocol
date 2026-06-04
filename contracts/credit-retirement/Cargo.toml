@@ -1,0 +1,17 @@
+[package]
+name = "nbbs-credit-retirement"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = "26.0.1"
+nbbs-shared = { path = "../shared" }
+
+[dev-dependencies]
+soroban-sdk = { version = "26.0.1", features = ["testutils"] }
+
+[features]
+testutils = ["soroban-sdk/testutils"]

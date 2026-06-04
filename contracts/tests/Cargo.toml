@@ -1,0 +1,14 @@
+[package]
+name = "nbbs-tests"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+soroban-sdk = "26.0.1"
+nbbs-bond-issuer = { path = "../bond-issuer" }
+nbbs-coupon-engine = { path = "../coupon-engine" }
+nbbs-oracle-consumer = { path = "../oracle-consumer" }
+nbbs-dex-router = { path = "../dex-router" }
+nbbs-project-registry = { path = "../project-registry" }
+nbbs-credit-retirement = { path = "../credit-retirement" }
+nbbs-shared = { path = "../shared" }
