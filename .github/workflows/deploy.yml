@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Target network'
+        required: true
+        default: 'testnet'
+        type: choice
+        options: [testnet, mainnet]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Soroban CLI
+        run: cargo install --locked soroban-cli --version 26.0.1
+      - name: Deploy contracts
+        run: |
+          if [ "${{ github.event.inputs.network }}" = "mainnet" ]; then
+            ./scripts/deploy-mainnet.sh
+          else
+            ./scripts/deploy-testnet.sh
+          fi
+        env:
+          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_${{ github.event.inputs.network == 'mainnet' && 'MAINNET' || 'TESTNET' }}_SECRET }}

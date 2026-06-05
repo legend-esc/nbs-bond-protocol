@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["projectName", "methodology", "location", "totalAreaHa", "carbonSequestrationEstimate"],
+  "properties": {
+    "projectName": { "type": "string", "minLength": 1 },
+    "methodology": { "type": "string", "enum": ["VERRA-VCS", "GOLD-STANDARD", "ACR", "CAR"] },
+    "location": {
+      "type": "object",
+      "required": ["country", "coordinates"],
+      "properties": {
+        "country": { "type": "string" },
+        "coordinates": { "type": "object", "properties": { "lat": { "type": "number" }, "lng": { "type": "number" } } }
+      }
+    },
+    "totalAreaHa": { "type": "number", "minimum": 1 },
+    "carbonSequestrationEstimate": { "type": "number", "minimum": 0 },
+    "biodiversityCorridor": { "type": "boolean" },
+    "blueCarbon": { "type": "boolean" },
+    "projectDeveloper": { "type": "string" },
+    "description": { "type": "string" },
+    "startDate": { "type": "string", "format": "date" },
+    "documents": { "type": "array", "items": { "type": "string" } }
+  }
+}

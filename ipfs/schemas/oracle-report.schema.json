@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["projectId", "periodStart", "periodEnd", "carbonSequesteredKg", "methodology", "provider"],
+  "properties": {
+    "projectId": { "type": "string" },
+    "periodStart": { "type": "string", "format": "date" },
+    "periodEnd": { "type": "string", "format": "date" },
+    "carbonSequesteredKg": { "type": "number", "minimum": 0 },
+    "methodology": { "type": "string" },
+    "provider": { "type": "string" },
+    "satelliteImageHash": { "type": "string" },
+    "auditorReportHash": { "type": "string" },
+    "sensorDataHash": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  }
+}
