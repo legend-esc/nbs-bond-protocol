@@ -1,6 +1,6 @@
 use soroban_sdk::{contracttype, BytesN, Symbol, Vec};
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[contracttype]
 pub enum CreditType {
     Carbon,
@@ -8,7 +8,7 @@ pub enum CreditType {
     Basket,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 #[contracttype]
 pub struct BondConfig {
     pub project_id: BytesN<32>,
@@ -35,7 +35,7 @@ pub struct OracleReport {
     pub ipfs_evidence_hash: BytesN<32>,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[contracttype]
 pub enum BondStatus {
     Active,
