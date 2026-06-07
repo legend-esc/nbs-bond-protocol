@@ -43,7 +43,7 @@ pub enum BondStatus {
     Defaulted,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[contracttype]
 pub enum ProjectStatus {
     Pending,

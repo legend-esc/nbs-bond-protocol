@@ -50,6 +50,7 @@ pub enum RegistryError {
     ProjectNotFound = 3,
     ProjectAlreadyExists = 4,
     InvalidStatusTransition = 5,
+    InvalidNonce = 6,
 }
 
 #[derive(Clone, Debug, PartialEq)]
