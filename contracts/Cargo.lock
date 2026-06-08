@@ -894,6 +894,7 @@ dependencies = [
 name = "nbbs-coupon-engine"
 version = "0.1.0"
 dependencies = [
+ "nbbs-bond-issuer",
  "nbbs-shared",
  "soroban-sdk",
 ]

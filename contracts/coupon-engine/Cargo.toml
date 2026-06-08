@@ -12,6 +12,7 @@ nbbs-shared = { path = "../shared" }
 
 [dev-dependencies]
 soroban-sdk = { version = "26.0.1", features = ["testutils"] }
+nbbs-bond-issuer = { path = "../bond-issuer", features = ["testutils"] }
 
 [features]
 testutils = ["soroban-sdk/testutils"]
