@@ -911,6 +911,7 @@ dependencies = [
 name = "nbbs-dex-router"
 version = "0.1.0"
 dependencies = [
+ "nbbs-bond-issuer",
  "nbbs-shared",
  "soroban-sdk",
 ]
