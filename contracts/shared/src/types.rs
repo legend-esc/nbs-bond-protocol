@@ -52,7 +52,7 @@ pub enum ProjectStatus {
     Inactive,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[contracttype]
 pub enum ReportStatus {
     Pending,
