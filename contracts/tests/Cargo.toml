@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-soroban-sdk = "26.0.1"
+soroban-sdk = { version = "26.0.1", features = ["testutils"] }
 nbbs-bond-issuer = { path = "../bond-issuer" }
 nbbs-coupon-engine = { path = "../coupon-engine" }
 nbbs-oracle-consumer = { path = "../oracle-consumer" }
