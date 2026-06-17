@@ -1,8 +1,10 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
+import { AuthService } from '../../auth/auth.service';
+import { WalletService } from '../../auth/wallet.service';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { Order, Bond } from '../../shared/interfaces/bond.interface';
@@ -38,61 +40,118 @@ import { Order, Bond } from '../../shared/interfaces/bond.interface';
 
       @if (loading()) {
         <div class="loading-section"><app-loading-spinner size="lg" /></div>
-      } @else if (orders().length === 0) {
-        <div class="empty-section">
-          <p>No active orders. List your bond tokens for sale.</p>
-        </div>
       } @else {
-        <div class="orders-table-wrapper">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Bond</th>
-                <th>Seller</th>
-                <th>Amount</th>
-                <th>Price</th>
-                <th>Asset</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (order of orders(); track order.id) {
-                <tr>
-                  <td>{{ order.id }}</td>
-                  <td>{{ order.bondId }}</td>
-                  <td class="mono">{{ order.seller.slice(0, 8) }}...</td>
-                  <td>{{ order.amount }}</td>
-                  <td>{{ order.pricePerToken }}</td>
-                  <td>{{ order.quoteAsset }}</td>
-                  <td><app-status-badge [status]="order.status" variant="bond" /></td>
-                  <td>{{ order.createdAt | date }}</td>
-                  <td>
-                    @if (order.status === 'Open' || order.status === 'PartiallyFilled') {
-                      @if (buyOrderId() === order.id) {
-                        <div class="buy-form">
-                          <input type="number" class="buy-input" placeholder="Amount" [(ngModel)]="buyAmount" min="1" />
-                          <input type="number" class="buy-input" placeholder="Max price" [(ngModel)]="buyMaxPrice" min="0.01" />
-                          <div class="buy-actions">
-                            <button class="btn btn-sm btn-primary" (click)="onBuy(order)" [disabled]="buySubmitting()">Confirm</button>
-                            <button class="btn btn-sm btn-outline" (click)="cancelBuy()">Cancel</button>
-                          </div>
-                          @if (buyError()) {
-                            <div class="error-msg">{{ buyError() }}</div>
-                          }
-                        </div>
-                      } @else {
-                        <button class="btn btn-sm btn-primary" (click)="openBuy(order)">Buy</button>
-                      }
-                    }
-                  </td>
-                </tr>
+        @if (priceKeys().length > 0) {
+          <div class="price-overview">
+            <h3 class="section-title">Price Overview</h3>
+            <div class="price-grid">
+              @for (bondId of priceKeys(); track bondId) {
+                <div class="price-card">
+                  <span class="price-bond">Bond #{{ bondId }}</span>
+                  <span class="price-best">Best: {{ bestPrices()[bondId].best }}</span>
+                  <span class="price-avg">Avg: {{ bestPrices()[bondId].average | number:'1.1-1' }} USDC</span>
+                </div>
               }
-            </tbody>
-          </table>
+            </div>
+          </div>
+        }
+
+        <div class="orders-section">
+          <div class="section-header">
+            <h3 class="section-title">Open Orders ({{ orders().length }})</h3>
+          </div>
+
+          @if (orders().length === 0) {
+            <div class="empty-section">
+              <p>No active orders. List your bond tokens for sale.</p>
+            </div>
+          } @else {
+            <div class="orders-table-wrapper">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Bond</th>
+                    <th>Seller</th>
+                    <th>Amount</th>
+                    <th>Price</th>
+                    <th>Asset</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (order of filteredOrders(); track order.id) {
+                    <tr>
+                      <td>{{ order.id }}</td>
+                      <td>{{ order.bondId }}</td>
+                      <td class="mono">{{ order.seller.slice(0, 8) }}...</td>
+                      <td>{{ order.amount }}</td>
+                      <td>{{ order.pricePerToken }}</td>
+                      <td>{{ order.quoteAsset }}</td>
+                      <td><app-status-badge [status]="order.status" variant="bond" /></td>
+                      <td>{{ order.createdAt | date }}</td>
+                      <td>
+                        @if (order.status === 'Open' || order.status === 'PartiallyFilled') {
+                          @if (buyOrderId() === order.id) {
+                            <div class="buy-form">
+                              <input type="number" class="buy-input" placeholder="Amount" [(ngModel)]="buyAmount" min="1" />
+                              <input type="number" class="buy-input" placeholder="Max price" [(ngModel)]="buyMaxPrice" min="0.01" />
+                              <div class="buy-actions">
+                                <button class="btn btn-sm btn-primary" (click)="onBuy(order)" [disabled]="buySubmitting()">Confirm</button>
+                                <button class="btn btn-sm btn-outline" (click)="cancelBuy()">Cancel</button>
+                              </div>
+                              @if (buyError()) {
+                                <div class="error-msg">{{ buyError() }}</div>
+                              }
+                            </div>
+                          } @else {
+                            <button class="btn btn-sm btn-primary" (click)="openBuy(order)">Buy</button>
+                          }
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
         </div>
+
+        @if (walletService.isConnected() && myOrders().length > 0) {
+          <div class="orders-section my-orders">
+            <h3 class="section-title">My Orders</h3>
+            <div class="orders-table-wrapper">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Bond</th>
+                    <th>Amount</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (order of myOrders(); track order.id) {
+                    <tr>
+                      <td>{{ order.id }}</td>
+                      <td>{{ order.bondId }}</td>
+                      <td>{{ order.amount }}</td>
+                      <td>{{ order.pricePerToken }}</td>
+                      <td><app-status-badge [status]="order.status" variant="bond" /></td>
+                      <td>{{ order.createdAt | date }}</td>
+                      <td>—</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
       }
     </div>
   `,
@@ -105,8 +164,18 @@ import { Order, Bond } from '../../shared/interfaces/bond.interface';
     .filter-label { font-size: 0.8125rem; font-weight: 600; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
     .filter-select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.875rem; outline: none; background: #fff; }
     .filter-select:focus { border-color: #3b82f6; }
+    .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+    .price-overview { margin-bottom: 24px; }
+    .price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .price-card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 4px; }
+    .price-bond { font-weight: 600; font-size: 0.875rem; }
+    .price-best { font-size: 0.8125rem; color: #22c55e; }
+    .price-avg { font-size: 0.75rem; color: #6b7280; }
     .loading-section { display: flex; justify-content: center; padding: 48px 0; }
     .empty-section { text-align: center; padding: 48px 0; color: #6b7280; }
+    .orders-section { margin-bottom: 32px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .my-orders { margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
     .orders-table-wrapper { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
     .orders-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
     .orders-table th { text-align: left; padding: 12px 16px; font-weight: 600; color: #6b7280; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
@@ -132,6 +201,8 @@ export class MarketplaceListComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  readonly authService = inject(AuthService);
+  readonly walletService = inject(WalletService);
 
   readonly orders = signal<Order[]>([]);
   readonly bonds = signal<Bond[]>([]);
@@ -144,6 +215,38 @@ export class MarketplaceListComponent implements OnInit {
   readonly buyError = signal('');
   buyAmount = 0;
   buyMaxPrice = 0;
+
+  readonly bestPrices = computed(() => {
+    const orders = this.orders();
+    const grouped = new Map<number, Order[]>();
+    orders.filter(o => o.status === 'Open').forEach(o => {
+      const list = grouped.get(o.bondId) || [];
+      list.push(o);
+      grouped.set(o.bondId, list);
+    });
+    const result: Record<number, { best: number; average: number }> = {};
+    grouped.forEach((list, bondId) => {
+      const prices = list.map(o => o.pricePerToken);
+      result[bondId] = {
+        best: Math.min(...prices),
+        average: prices.reduce((a, b) => a + b, 0) / prices.length,
+      };
+    });
+    return result;
+  });
+
+  readonly priceKeys = computed(() => Object.keys(this.bestPrices()).map(Number));
+
+  readonly filteredOrders = computed(() => {
+    const selected = this.filterBondId();
+    return selected ? this.orders().filter(o => o.bondId === selected) : this.orders();
+  });
+
+  readonly myOrders = computed(() => {
+    const address = this.walletService.address();
+    if (!address) return [];
+    return this.orders().filter(o => o.seller === address);
+  });
 
   ngOnInit(): void {
     const bondIdParam = this.route.snapshot.queryParamMap.get('bondId');
