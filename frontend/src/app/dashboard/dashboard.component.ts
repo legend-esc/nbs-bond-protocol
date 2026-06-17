@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { ApiService } from '../shared/services/api.service';
 import { BondCardComponent } from '../shared/components/bond-card/bond-card.component';
 import { ProjectCardComponent } from '../shared/components/project-card/project-card.component';
@@ -113,6 +113,7 @@ import { Bond, Project } from '../shared/interfaces/bond.interface';
 })
 export class DashboardComponent implements OnInit {
   private readonly apiService = inject(ApiService);
+  private readonly router = inject(Router);
 
   readonly bonds = signal<Bond[]>([]);
   readonly projects = signal<Project[]>([]);
@@ -156,7 +157,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onSubscribe(bondId: string): void {
-    // Navigate to bond detail — will be implemented in Day 15
-    console.log('Subscribe to bond', bondId);
+    this.router.navigate(['/bonds', bondId]);
   }
 }
