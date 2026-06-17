@@ -28,6 +28,10 @@ export class ApiService {
     return this.http.get<Bond>(`/api/bonds/${id}`, { headers: this.headers() });
   }
 
+  issueBond(data: any): Observable<Bond> {
+    return this.http.post<Bond>('/api/bonds', data, { headers: this.headers() });
+  }
+
   subscribeToBond(id: number, amount: number, nonce: number): Observable<SubscriptionResponse> {
     return this.http.post<SubscriptionResponse>(
       `/api/bonds/${id}/subscribe`,

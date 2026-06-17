@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ApiService } from '../../shared/services/api.service';
@@ -14,6 +14,7 @@ import { Bond } from '../../shared/interfaces/bond.interface';
     <div class="bonds-page">
       <div class="page-header">
         <h1 class="page-title">Bonds</h1>
+        <a class="btn btn-primary" routerLink="/bonds/issue">Issue Bond</a>
       </div>
 
       @if (error()) {
@@ -22,22 +23,42 @@ import { Bond } from '../../shared/interfaces/bond.interface';
 
       @if (loading()) {
         <div class="loading-section"><app-loading-spinner size="lg" /></div>
-      } @else if (bonds().length === 0) {
-        <div class="empty-section">
-          <p>No bonds available yet.</p>
-        </div>
       } @else {
-        <div class="card-grid">
-          @for (bond of bonds(); track bond.id) {
-            <app-bond-card [bond]="bond" (subscribe)="onSubscribe(bond.id)" />
-          }
+        <div class="filter-bar">
+          <button
+            class="filter-btn"
+            [class.active]="filter() === 'all'"
+            (click)="filter.set('all')"
+          >All</button>
+          <button
+            class="filter-btn"
+            [class.active]="filter() === 'Active'"
+            (click)="filter.set('Active')"
+          >Active</button>
+          <button
+            class="filter-btn"
+            [class.active]="filter() === 'Matured'"
+            (click)="filter.set('Matured')"
+          >Matured</button>
         </div>
 
-        <div class="pagination">
-          <button class="btn btn-outline" [disabled]="page() <= 1" (click)="prevPage()">Previous</button>
-          <span class="page-info">Page {{ page() }} of {{ totalPages() }}</span>
-          <button class="btn btn-outline" [disabled]="page() >= totalPages()" (click)="nextPage()">Next</button>
-        </div>
+        @if (filteredBonds().length === 0) {
+          <div class="empty-section">
+            <p>No {{ filter() === 'all' ? '' : filter() }} bonds found.</p>
+          </div>
+        } @else {
+          <div class="card-grid">
+            @for (bond of filteredBonds(); track bond.id) {
+              <app-bond-card [bond]="bond" (subscribe)="onSubscribe(bond.id)" />
+            }
+          </div>
+
+          <div class="pagination">
+            <button class="btn btn-outline" [disabled]="page() <= 1" (click)="prevPage()">Previous</button>
+            <span class="page-info">Page {{ page() }} of {{ totalPages() }}</span>
+            <button class="btn btn-outline" [disabled]="page() >= totalPages()" (click)="nextPage()">Next</button>
+          </div>
+        }
       }
     </div>
   `,
@@ -46,12 +67,18 @@ import { Bond } from '../../shared/interfaces/bond.interface';
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .page-title { font-size: 1.5rem; font-weight: 700; }
     .error-banner { background: #fef2f2; color: #ef4444; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.875rem; }
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+    .filter-btn { padding: 8px 20px; border-radius: 20px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; border: 1px solid #d1d5db; background: #fff; color: #1a1a2e; transition: all 0.15s; }
+    .filter-btn.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+    .filter-btn:hover:not(.active) { background: #f0f2f5; }
     .loading-section { display: flex; justify-content: center; padding: 48px 0; }
     .empty-section { text-align: center; padding: 48px 0; color: #6b7280; }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
     .pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 32px; }
     .page-info { font-size: 0.875rem; color: #6b7280; }
     .btn { padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #1a1a2e; color: #fff; }
+    .btn-primary:hover { background: #2a2a4e; }
     .btn-outline { background: #fff; color: #1a1a2e; border: 1px solid #d1d5db; }
     .btn-outline:hover:not(:disabled) { background: #f0f2f5; }
     .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -67,7 +94,14 @@ export class BondsListComponent implements OnInit {
   readonly error = signal('');
   readonly page = signal(1);
   readonly totalPages = signal(1);
+  readonly filter = signal<'all' | 'Active' | 'Matured'>('all');
   private readonly limit = 12;
+
+  readonly filteredBonds = computed(() => {
+    const f = this.filter();
+    if (f === 'all') return this.bonds();
+    return this.bonds().filter(b => b.status === f);
+  });
 
   ngOnInit(): void {
     this.loadBonds();
