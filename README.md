@@ -5,11 +5,14 @@
 ### *Tokenized Nature-based Solution Bonds on Stellar*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/your-org/nbs-bond-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/nbs-bond-protocol/actions/workflows/ci.yml)
 [![Built on Stellar](https://img.shields.io/badge/Built%20on-Stellar-7B68EE)](https://stellar.org)
 [![Soroban](https://img.shields.io/badge/Contracts-Soroban%20%7C%20Rust-orange)](https://soroban.stellar.org)
 [![NestJS](https://img.shields.io/badge/API-NestJS-red)](https://nestjs.com)
 [![Angular](https://img.shields.io/badge/Frontend-Angular-DD0031)](https://angular.io)
 [![IPFS](https://img.shields.io/badge/Storage-IPFS-65C2CB)](https://ipfs.tech)
+[![Contract Count](https://img.shields.io/badge/Contracts-6-blue)](https://github.com/your-org/nbs-bond-protocol)
+[![Test Coverage](https://img.shields.io/badge/Coverage-Pending-yellow)](https://github.com/your-org/nbs-bond-protocol)
 
 > **Redefining green finance** — where bond interest is paid in carbon and biodiversity credits,  
 > every tranche backs a living ecosystem, and DeFi unlocks liquidity for the planet.

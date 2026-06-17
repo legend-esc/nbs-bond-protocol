@@ -1,4 +1,27 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nbs
+      POSTGRES_PASSWORD: nbs
+      POSTGRES_DB: nbs_bond
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nbs"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ./api
@@ -9,26 +32,20 @@ services:
       STELLAR_HORIZON_URL: https://horizon-testnet.stellar.org
       DATABASE_URL: postgresql://nbs:nbs@postgres:5432/nbs_bond
       REDIS_URL: redis://redis:6379
-    depends_on: [postgres, redis]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
     volumes: [./api:/app, /app/node_modules]
-
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: nbs
-      POSTGRES_PASSWORD: nbs
-      POSTGRES_DB: nbs_bond
-    ports: ["5432:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data]
-
-  redis:
-    image: redis:7-alpine
-    ports: ["6379:6379"]
 
   ipfs:
     image: ipfs/kubo:latest
     ports: ["5001:5001", "8080:8080"]
     volumes: [ipfsdata:/data/ipfs]
+    healthcheck:
+      test: ["CMD", "ipfs", "id"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 volumes:
   pgdata:
