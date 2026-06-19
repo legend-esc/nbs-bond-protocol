@@ -33,8 +33,12 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": { "polyfills": ["zone.js", "zone.js/testing"], "tsConfig": "tsconfig.spec.json", "assets": ["src/assets"], "styles": ["src/styles.css"], "scripts": [] }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": { "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"] }
         }
       }
     }
