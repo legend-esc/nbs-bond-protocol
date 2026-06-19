@@ -1,4 +1,5 @@
 #![no_std]
+#![allow(deprecated)]
 use soroban_sdk::{contract, contractimpl, contracttype, vec, Address, BytesN, Env, Symbol, Vec};
 use nbbs_shared::{OracleError, ReportStatus};
 
@@ -84,6 +85,7 @@ fn set_nonce(env: &Env, addr: &Address, nonce: u64) {
 #[contract]
 pub struct OracleConsumer;
 
+#[allow(clippy::too_many_arguments)]
 #[contractimpl]
 impl OracleConsumer {
     pub fn __constructor(env: Env, admin: Address) {
@@ -186,6 +188,7 @@ impl OracleConsumer {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn submit_report(
         env: Env,
         provider: Address,

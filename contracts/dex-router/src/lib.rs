@@ -1,4 +1,5 @@
 #![no_std]
+#![allow(deprecated)]
 use soroban_sdk::{contract, contractimpl, contracttype, vec, Address, Env, IntoVal, Symbol, Vec};
 use nbbs_shared::DEXError;
 
@@ -99,6 +100,7 @@ fn verify_holder_balance(
 #[contract]
 pub struct DEXRouter;
 
+#[allow(clippy::too_many_arguments)]
 #[contractimpl]
 impl DEXRouter {
     pub fn __constructor(
@@ -116,6 +118,7 @@ impl DEXRouter {
             .set(&DataKey::CouponEngineAddress, &coupon_engine_address);
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn list_bond_tokens(
         env: Env,
         seller: Address,

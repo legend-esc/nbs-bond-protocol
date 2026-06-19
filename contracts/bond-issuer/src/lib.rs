@@ -1,5 +1,6 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, vec, Address, Env, Symbol};
+#![allow(deprecated)]
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol};
 use nbbs_shared::{BondConfig, BondError, BondStatus};
 
 pub const MAX_SUPPLY: i128 = 1_000_000_000_000_000_000;
@@ -349,7 +350,7 @@ impl BondIssuer {
 #[cfg(test)]
 mod test {
     use super::*;
-    use soroban_sdk::{testutils::Address as _, testutils::Ledger as _, BytesN};
+    use soroban_sdk::{testutils::Address as _, testutils::Ledger as _, vec, BytesN};
 
     fn create_project_id(env: &Env, value: u8) -> BytesN<32> {
         let mut arr = [0u8; 32];
