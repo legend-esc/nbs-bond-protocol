@@ -1,7 +1,29 @@
+# Rust
 target/
+*.wasm
+
+# Node
 node_modules/
 dist/
+
+# Environment
 .env
-*.wasm
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
 test_snapshots/
 coverage/
+
+# Build artifacts
+*.log
+build/
